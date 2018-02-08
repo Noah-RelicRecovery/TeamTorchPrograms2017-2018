@@ -1,0 +1,264 @@
+
+
+
+package org.firstinspires.ftc.robotcontroller.external.samples;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
+
+
+/**
+ * Created by Noah Trist
+ */
+@TeleOp(name = "ntt")
+public class ntt extends LinearOpMode {
+    public DcMotor LeftB = null;
+    public DcMotor RightB = null;
+    public DcMotor arm1=null;
+    public DcMotor arm2=null;
+    public DcMotor python=null;
+    public DcMotor power=null;
+    public Servo Lclamp1=null;
+    public Servo Rclamp1=null;
+    public Servo Lclamp2=null;
+    public Servo Rclamp2=null;
+    public Servo jewel1=null;
+    public Servo jewel2=null;
+    public Servo relicgrabber=null;
+    public Servo reliclifter=null;
+
+
+
+
+    ColorSensor colorSensor;
+
+    HardwareMap hwMap = null;
+
+    static final double Lclampopen =1;
+    static final double Rclampopen =0;
+    static final double Lclampclosed =.4;
+    static final double Rclampclosed =.6;
+    static final double Lclamprelease =.63;
+    static final double Rclamprelease =.37;
+    static final double J1down=1;
+    static final double J1up=0;
+    static final double J2out=.45;
+    static final double J2forward=1;
+    static final double J2backward=0;
+    static final double relicgrab=0;
+    static final double relicrelease=1;
+    static final double relicup=1;
+    static final double relicdown=.25;
+
+
+
+
+    @Override
+
+    public void runOpMode() throws InterruptedException {
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
+        hwMap = hardwareMap;
+
+        LeftB = hwMap.dcMotor.get("LB");
+        RightB = hwMap.dcMotor.get("RB");
+        arm1=hwMap.dcMotor.get("giraffe1");
+        arm2 =hwMap.dcMotor.get("giraffe2");
+        python=hwMap.dcMotor.get("python");
+        power=hwMap.dcMotor.get("power");
+        Lclamp1=hwMap.servo.get("Lclamp1");
+        Rclamp1=hwMap.servo.get("Rclamp1");
+        Lclamp2=hwMap.servo.get("Lclamp2");
+        Rclamp2=hwMap.servo.get("Rclamp2");
+        jewel1=hwMap.servo.get("J1");
+        jewel2=hwMap.servo.get("J2");
+        relicgrabber=hwMap.servo.get("grab");
+        reliclifter=hwMap.servo.get("lift");
+
+
+        colorSensor = hardwareMap.colorSensor.get("color");
+
+        LeftB.setDirection(DcMotor.Direction.FORWARD);
+        RightB.setDirection(DcMotor.Direction.REVERSE);
+
+        LeftB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        RightB.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        arm1.setDirection(DcMotor.Direction.REVERSE);
+        arm1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        arm2.setDirection(DcMotor.Direction.REVERSE);
+        arm2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        python.setDirection(DcMotor.Direction.FORWARD);
+        python.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
+
+        float armPositionHoldPower = 0;
+        float armHoldPosition = 0;
+        boolean armMoving = false;
+
+        float leftpower = 0;
+        float rightpower = 0;
+
+
+        waitForStart();
+
+        while (opModeIsActive()) {
+            telemetry.update();
+
+
+
+
+
+            if (gamepad1.right_bumper  && gamepad1.left_bumper  ) {
+
+                leftpower = gamepad1.right_stick_y/2;
+                rightpower = gamepad1.left_stick_y/2;
+
+
+
+            }
+
+            else if (gamepad1.right_bumper){
+
+
+
+                leftpower = -gamepad1.left_stick_y/2;
+                rightpower = -gamepad1.right_stick_y/2;
+
+            }
+
+            else if (gamepad1.left_bumper) {
+
+
+                leftpower= gamepad1.right_stick_y;
+                rightpower= gamepad1.left_stick_y;
+            }
+            else {
+                leftpower = -gamepad1.left_stick_y;
+                rightpower = -gamepad1.right_stick_y ;
+            }
+
+
+
+            float armpower = -gamepad2.right_stick_y;
+            float pythonpower = -gamepad2.left_stick_y;
+            float powerpower = 1;
+
+
+
+            //This below program will be taken out eventually
+           /* if (Math.abs(armpower) < .3) {
+                if (armMoving) armHoldPosition =arm1.getCurrentPosition();
+                if (arm1.getCurrentPosition()<armHoldPosition) armPositionHoldPower +=.001;
+                else armPositionHoldPower -=.01;
+                if (armPositionHoldPower<0) armPositionHoldPower=0;
+                if (armPositionHoldPower > 0.5) armPositionHoldPower = .5f;
+                armMoving=false;
+                armpower=armPositionHoldPower;
+            }
+            else armMoving=true;
+            */
+            //The above program will be taken out eventually
+
+
+
+            arm1.setPower(armpower*3/10);
+            arm2.setPower(armpower*3/10);
+            python.setPower(pythonpower / 3);
+            power.setPower(powerpower);
+
+
+            if(gamepad2.right_bumper) {
+
+                Lclamp1.setPosition(Lclampclosed);
+                Rclamp1.setPosition(Rclampclosed);
+                Lclamp2.setPosition(Lclampclosed);
+                Rclamp2.setPosition(Rclampclosed);
+            }
+
+
+
+            if (gamepad2.dpad_up||gamepad2.dpad_down||gamepad2.dpad_left||gamepad2.dpad_right) {
+
+                Lclamp1.setPosition(Lclamprelease);
+                Rclamp1.setPosition(Rclamprelease);
+                Lclamp2.setPosition(Lclamprelease);
+                Rclamp2.setPosition(Rclamprelease);
+
+            }
+
+            if (gamepad2.b) {
+                relicgrabber.setPosition(relicrelease);
+            }
+
+            if (gamepad2.a) {
+                reliclifter.setPosition(.5);
+                reliclifter.setPosition(.4);
+                reliclifter.setPosition(.35);
+                reliclifter.setPosition(.3);
+                reliclifter.setPosition(relicdown);
+            }
+
+            if (gamepad2.x && gamepad2.y && gamepad2.left_bumper) {
+                jewel1.setPosition(J1up); // move the jewel arm back up
+                sleep(250);
+                jewel2.setPosition(J2out);
+                sleep(1250);
+                jewel2.setPosition(J2forward);
+            }
+
+            else if (gamepad2.x) {
+                relicgrabber.setPosition(relicgrab);
+            }
+
+            else if (gamepad2.y) {
+                reliclifter.setPosition(relicup);
+            }
+
+            else if (gamepad2.left_bumper) {
+
+                Lclamp1.setPosition(Lclampopen);
+                Rclamp1.setPosition(Rclampopen);
+                Lclamp2.setPosition(Lclampopen);
+                Rclamp2.setPosition(Rclampopen);
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+            LeftB.setPower(leftpower);
+
+            RightB.setPower(rightpower);
+
+            telemetry.addData("Left", leftpower);
+            telemetry.addData("Right", rightpower);
+            telemetry.addData("Red", colorSensor.red());
+            telemetry.addData("Blue", colorSensor.blue());
+            telemetry.addData("Arm Pos", arm1.getCurrentPosition());
+            telemetry.addData("Arm Hold",armHoldPosition);
+            telemetry.addData("Arm HPwr",armPositionHoldPower);
+
+            telemetry.update();
+
+
+            idle();
+        }
+
+
+    }
+}
