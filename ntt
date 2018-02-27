@@ -50,7 +50,7 @@ public class ntt extends LinearOpMode {
     static final double J2out=.45;
     static final double J2forward=1;
     static final double J2backward=0;
-    static final double relicgrab=0;
+    static final double relicgrab=.25;
     static final double relicrelease=1;
     static final double relicup=1;
     static final double relicdown=.25;
@@ -118,8 +118,8 @@ public class ntt extends LinearOpMode {
 
             if (gamepad1.right_bumper  && gamepad1.left_bumper  ) {
 
-                leftpower = gamepad1.right_stick_y/2;
-                rightpower = gamepad1.left_stick_y/2;
+                leftpower = gamepad1.right_stick_y*2/3;
+                rightpower = gamepad1.left_stick_y*2/3  ;
 
 
 
@@ -129,8 +129,8 @@ public class ntt extends LinearOpMode {
 
 
 
-                leftpower = -gamepad1.left_stick_y/2;
-                rightpower = -gamepad1.right_stick_y/2;
+                leftpower = -gamepad1.left_stick_y*2/3;
+                rightpower = -gamepad1.right_stick_y*2/3;
 
             }
 
@@ -171,7 +171,7 @@ public class ntt extends LinearOpMode {
 
             arm1.setPower(armpower*3/10);
             arm2.setPower(armpower*3/10);
-            python.setPower(pythonpower / 3);
+            python.setPower(pythonpower *3/4 );
             power.setPower(powerpower);
 
 
